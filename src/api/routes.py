@@ -127,3 +127,81 @@ def get_stays():
     stays = Stay.query.all()
     stays = list(map(lambda stay : stay.serialize(), stays))
     return jsonify(stays), 200
+
+
+@api.route('/create/award', methods=['GET'])
+def list_of_awards():
+
+    award1 = Award(
+     name = "Aficionado",
+     totaltime = "20",
+     discount = "5",
+    )
+    db.session.add(award1)
+
+    award2 = Award(
+     name = "Primera clase completa",
+     totaltime = "45",
+     discount = "10",
+    )
+    db.session.add(award2)
+
+    award3 = Award(
+     name = "Anda, vamos mejorando",
+     totaltime = "75",
+     discount = "12",
+    )
+    db.session.add(award3)
+
+    award4 = Award(
+     name = "WOW",
+     totaltime = "105",
+     discount = "15",
+    )
+    db.session.add(award4)
+
+    award5 = Award(
+     name = "A mitad de lo gordo",
+     totaltime = "150",
+     discount = "20",
+    )
+    db.session.add(award5)
+
+    award6 = Award(
+     name = "Wapura",
+     totaltime = "200",
+     discount = "25",
+    )
+    db.session.add(award6)
+
+    award7 = Award(
+     name = "GYM GYM GYM",
+     totaltime = "250",
+     discount = "30",
+    )
+    db.session.add(award7)
+
+    award8 = Award(
+     name = "uuuuuuuh",
+     totaltime = "350",
+     discount = "35",
+    )
+    db.session.add(award8)
+
+    award9 = Award(
+     name = "Vigorexia",
+     totaltime = "900",
+     discount = "50",
+    )
+    db.session.add(award9)
+
+    db.session.commit()
+
+    return jsonify("award ok"), 200
+
+@api.route('/awards', methods=['GET'])
+def get_awards():
+    awards = Award.query.all()
+    awards = list(map(lambda award : award.serialize(), awards))
+    return jsonify(awards), 200
+

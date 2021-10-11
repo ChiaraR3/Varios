@@ -36,11 +36,11 @@ plans_stay = db.Table('plans',
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    room = db.Column(db.Integer, unique=False, nullable=False)
+    gender = db.Column(db.String(120), unique=True, nullable=False)
+    room = db.Column(db.Integer, unique=True, nullable=False)
     weight = db.Column(db.Integer, unique=False, nullable=False)
     height = db.Column(db.Integer, unique=False, nullable=False)
     weeklyexercise = db.Column(db.Integer, unique=False, nullable=False)
-
     stay_id = db.Column(db.Integer, db.ForeignKey('stay.id'),
         nullable=False)
     stay = db.relationship('Stay', backref='client', lazy=True)
@@ -60,7 +60,11 @@ class Client(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            # do not serialize the password, its a security breach
+            "gender": self.gender,
+            "room": self.room,
+            "weight": self.weight,
+            "height": self.height,
+            "weeklyexercise": self.weeklyexercise
         }
 
 class Plan(db.Model):
@@ -76,10 +80,9 @@ class Plan(db.Model):
     def serialize(self):
         return {
             "id": self.id,
+            "name": self.name,
             "time": self.time,
             "difficulty": self.difficulty
-           
-            # do not serialize the password, its a security breach
         }
         
 class Machine(db.Model):
@@ -94,7 +97,6 @@ class Machine(db.Model):
         return {
             "id": self.id,
             "name": self.name
-            # do not serialize the password, its a security breach
         }
 
 class Booking(db.Model):
