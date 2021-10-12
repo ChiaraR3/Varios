@@ -4,9 +4,13 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, Client, Plan, Machine, Booking, Award, Exercise, Stay
 from api.utils import generate_sitemap, APIException
+from flask_jwt_extended import JWTManager, create_access_token,jwt_required, get_jwt_identity
 
 api = Blueprint('api', __name__)
+app = Flask(__name__)
 
+app.config["JWT_SECRET_KEY"] = "superequipo-actimel-gimnasiohotel-apptivate"  
+jwt = JWTManager(app)
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -16,6 +20,69 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+
+@api.route("/login", methods=["POST"])
+def create_token():
+    email = request.json.get("email", None)
+    room = request.json.get("room", None)
+   
+    client = Client.query.filter_by(email=email, room=room).first()
+    if client is None:
+        
+        return jsonify({"msg": "Bad email or room"}), 401
+    
+   
+    access_token = create_access_token(identity=client.id)
+    return jsonify({ "token": access_token, "client_id": client.id })
+
+
+@api.route("/personal-data", methods=["POST"])
+def register_personaldata():
+    gender = request.json.get("gender", None)
+    weight = request.json.get("weight", None)
+    height = request.json.get("height", None)
+    weekly_exercise = request.json.get("weekly_exercise", None)
+   
+    client = Client(gender=gender, weight=weight, height=height, weekly_exercise=weekly_exercise)
+    json= request.get_json()
+
+    db.session.add(client)
+    db.session.commit()
+       
+
+    return jsonify([]), 200
+      
+@api.route("/booking", methods=["POST"])
+def register_booking():
+    day = request.json.get("day", None)
+    hour = request.json.get("hour", None)
+    month = request.json.get("month", None)
+    year = request.json.get("year", None)
+   
+    client = Client(gender=gender, weight=weight, height=height, weekly_exercise=weekly_exercise)
+    json= request.get_json()
+
+    db.session.add(client)
+    db.session.commit()
+       
+
+    return jsonify([]), 200
+
+# @api.route("/profile", methods=["POST"])
+# def define_profile():
+   # stay_id = request.json.get("day", None)
+   # plan_id = request.json.get("hour", None)
+  
+   # client = Client(gender=gender, weight=weight, height=height, weekly_exercise=weekly_exercise)
+   # json= request.get_json()
+
+  #  db.session.add(client)
+   # db.session.commit()
+       
+
+  #  return jsonify([]), 200
+          
 
 @api.route('/create/machine', methods=['GET'])
 def list_of_machines():
@@ -205,3 +272,51 @@ def get_awards():
     awards = list(map(lambda award : award.serialize(), awards))
     return jsonify(awards), 200
 
+@api.route('/create/plan', methods=['GET'])
+def list_of_plans():
+
+    plan1 = Plan(
+     name = "Bajar el buffet",
+     time = "135",
+     difficulty = "1",
+    )
+    db.session.add(plan1)
+    
+    plan2 = Plan(
+     name = "Que no se me note demasiado",
+     time = "315",
+     difficulty = "3",
+    )
+    db.session.add(plan2)
+
+    plan3 = Plan(
+     name = "Como si nunca me hubiese ido de vacaciones",
+     time = "540",
+     difficulty = "5",
+    )
+    db.session.add(plan3)
+    
+    db.session.commit()
+
+    return jsonify("plan ok"), 200
+
+@api.route('/plans', methods=['GET'])
+def get_plans():
+    plans = Plan.query.all()
+    plans = list(map(lambda plan : plan.serialize(), plans))
+    return jsonify(plans), 200
+
+@app.route("/plans/<int:plan_id>", methods=["GET"])
+def get_one_plan(plan_id):
+    plan = Plan.query.get(plan_id)
+    return jsonify(plan.serialize()), 200
+
+@app.route("/exercises/<int:excercise_id>", methods=["GET"])
+def get_one_exercise(plan_id):
+    exercise = Exercise.query.get(exercise_id)
+    return jsonify(exercise.serialize()), 200
+
+@app.route("/plan/<int:excercise_id>", methods=["GET"])
+def get_one_exercise(plan_id):
+    exercise = Exercise.query.get(exercise_id)
+    return jsonify(exercise.serialize()), 200

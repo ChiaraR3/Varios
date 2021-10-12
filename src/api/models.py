@@ -36,11 +36,11 @@ plans_stay = db.Table('plans',
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    gender = db.Column(db.String(120), unique=True, nullable=False)
     room = db.Column(db.Integer, unique=True, nullable=False)
-    weight = db.Column(db.Integer, unique=False, nullable=False)
-    height = db.Column(db.Integer, unique=False, nullable=False)
-    weeklyexercise = db.Column(db.Integer, unique=False, nullable=False)
+    gender = db.Column(db.String(120), unique=False, nullable=True)
+    weight = db.Column(db.Integer, unique=False, nullable=True)
+    height = db.Column(db.Integer, unique=False, nullable=True)
+    weekly_exercise = db.Column(db.Integer, unique=False, nullable=True)
     stay_id = db.Column(db.Integer, db.ForeignKey('stay.id'),
         nullable=False)
     stay = db.relationship('Stay', backref='client', lazy=True)
